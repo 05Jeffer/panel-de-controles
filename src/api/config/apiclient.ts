@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: "https://pos-back-production.up.railway.app"
+  baseURL:  process.env.REACT_APP_API_URL
 })
 
 export default apiClient;
