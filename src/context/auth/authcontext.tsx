@@ -1,3 +1,11 @@
+// Define una interfaz para los datos actualizados
+interface UpdatedAuthData {
+  nombre?: string;
+  email?: string;
+  telefono?: string;
+  pais?: string;
+}
+
 import { createContext, useState, useEffect, ReactNode, FC } from 'react';
 import Cookies from 'js-cookie';
 import {
@@ -44,7 +52,7 @@ export interface AuthContextType {
   logout: () => Promise<void>;
   fetchUserByID: (userID: number) => Promise<void>;
   deleteUserById: (userID: number) => Promise<void>;
-  editAuthByID: (updatedData: any) => Promise<void>;
+  editAuthByID: (updatedData: UpdatedAuthData) => Promise<void>;
   toggleUserStatusById: (userID: number) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<void>;
 }
@@ -153,7 +161,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
    * Función para editar datos de autenticación
    * @param updatedData - Los datos actualizados del usuario
    */
-  const editAuthByID = async (updatedData: any) => {
+  const editAuthByID = async (updatedData: UpdatedAuthData) => {
     const token = Cookies.get('authToken');
     if (token && authID !== null) {
       try {
