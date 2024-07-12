@@ -18,7 +18,9 @@ import {
   getAuth as getAuthService,
   editAuth as editAuthService,
   changePassword as changePasswordService,
-  toggleUserStatus as toggleUserStatusService
+  toggleUserStatus as toggleUserStatusService,
+  createUser as createUserService,
+  getCountryList as getCountryListService
 } from '../../api/auth/authapi';
 
 // Interfaces para los tipos de datos usados en el contexto
@@ -31,12 +33,16 @@ interface Auth {
   token: string;
 }
 
-interface User {
+export interface User {
   id: number;
   nombre: string;
+  email: string;
+  telefono: string;
+  pais: string;
   propietario: string;
   estado: boolean;
 }
+
 
 interface UserCero extends User {}
 
@@ -46,6 +52,8 @@ export interface AuthContextType {
   setUser: React.Dispatch<React.SetStateAction<User[] | null>>;
   userCero: UserCero[] | null;
   setUserCero: React.Dispatch<React.SetStateAction<UserCero[] | null>>;
+  countries: string | null;
+  fetchCountryList: () => Promise<void>;
   auth: Auth | null;
   authID: number | null;
   login: (email: string, password: string) => Promise<void>;
@@ -55,6 +63,7 @@ export interface AuthContextType {
   editAuthByID: (updatedData: UpdatedAuthData) => Promise<void>;
   toggleUserStatusById: (userID: number) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<void>;
+  createUser: (newUser: { nombre: string, email: string, telefono: string, password: string }) => Promise<void>;
 }
 
 // Creación del contexto
@@ -70,6 +79,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User[] | null>(null);
   const [userCero, setUserCero] = useState<UserCero[] | null>(null);
   const [authID, setAuthID] = useState<number | null>(null);
+  const [countries, setCountries] = useState<string | null>(null);
 
   /**
    * Función para iniciar sesión
@@ -196,6 +206,21 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   // Funciones para los usuarios que están en la aplicación
 
   /**
+   * Función para crear un nuevo usuario
+   * @param newUser - El objeto que contiene los datos del nuevo usuario
+   */
+  const createUser = async (newUser: { nombre: string, email: string, telefono: string, password: string }) => {
+    try {
+      const createdUser = await createUserService(newUser);
+      console.log('User created:', createdUser);
+      setUser((prevUser) => (prevUser ? [...prevUser, createdUser] : [createdUser]));
+      fetchUser();
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  };
+  /**
    * Función para obtener usuario por ID
    * @param userID - El ID del usuario
    */
@@ -299,6 +324,22 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+/**
+   * Función para obtener la lista de paises
+   */
+  const fetchCountryList = async () => {
+    try {
+      const countries = await getCountryListService();
+      //setCountries(countries);
+    } catch (error) {
+      console.error('Error fetching country list:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCountryList();
+  }, []);
+  
   return (
     <AuthContext.Provider
       value={{
@@ -314,7 +355,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         deleteUserById,
         editAuthByID,
         toggleUserStatusById,
-        changePassword
+        changePassword,
+        createUser,
+        countries,
+        fetchCountryList,
       }}
     >
       {children}
