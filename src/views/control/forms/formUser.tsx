@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import useAuth from '../../../hooks/useAuth';
 
@@ -21,11 +21,9 @@ const NewUserForm: React.FC = () => {
         nombreNegocio: '',
         password: '',
     });
-    const { countries, fetchCountryList, createUser } = useAuth();
+    const { countries, createUser } = useAuth();
 
-    useEffect(() => {
-        fetchCountryList();
-    }, [fetchCountryList]);
+    
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
