@@ -15,6 +15,14 @@ import {
   getCountryList as getCountryListService
 } from '../../api/auth/authapi';
 
+
+interface UpdatedAuthData {
+  nombre?: string;
+  email?: string;
+  telefono?: string;
+  pais?: string;
+}
+
 // Interfaces para los tipos de datos usados en el contexto
 interface Auth {
   id: number;
@@ -52,7 +60,7 @@ export interface AuthContextType {
   logout: () => Promise<void>;
   fetchUserByID: (userID: number) => Promise<void>;
   deleteUserById: (userID: number) => Promise<void>;
-  editAuthByID: (updatedData: any) => Promise<void>;
+  editAuthByID: (updatedData: UpdatedAuthData) => Promise<void>;
   toggleUserStatusById: (userID: number) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<void>;
   createUser: (newUser: { nombre: string, email: string, telefono: string, password: string }) => Promise<void>;
@@ -163,7 +171,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
    * Función para editar datos de autenticación
    * @param updatedData - Los datos actualizados del usuario
    */
-  const editAuthByID = async (updatedData: any) => {
+  const editAuthByID = async (updatedData: UpdatedAuthData) => {
     const token = Cookies.get('authToken');
     if (token && authID !== null) {
       try {

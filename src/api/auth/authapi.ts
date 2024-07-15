@@ -1,5 +1,12 @@
 import apiClient from "../config/apiclient";
 
+// Define una interfaz para los datos actualizados
+interface UpdatedAuthData {
+  nombre?: string;
+  email?: string;
+  telefono?: string;
+  pais?: string;
+}
 
 // Funciones de administrador
 
@@ -50,7 +57,7 @@ export const getAuth = async (token: string, authID: number) => {
  * @param updatedData - Los datos actualizados del usuario
  * @returns Los datos actualizados del usuario
  */
-export const editAuth = async (token: string, authID: number, updatedData: any) => {
+export const editAuth = async (token: string, authID: number, updatedData: UpdatedAuthData) => {
   const response = await apiClient.put(`/editar/${authID}`, updatedData, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -69,22 +76,18 @@ export const editAuth = async (token: string, authID: number, updatedData: any) 
  * @returns La respuesta de cambio de contraseña
  */
 export const changePassword = async (token: string, userId: number, contraseñaActual: string, nuevaContraseña: string, verificarContraseña: string) => {
-  try {
-    const response = await apiClient.put(`/usuario/${userId}/cambiarPass`, {
-      contraseñaActual,
-      nuevaContraseña,
-      verificarContraseña,
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await apiClient.put(`/usuario/${userId}/cambiarPass`, {
+    contraseñaActual,
+    nuevaContraseña,
+    verificarContraseña,
+  }, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  
+  return response.data;
 };
 
 // Funciones para los usuarios que están en la aplicación
